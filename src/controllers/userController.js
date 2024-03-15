@@ -25,7 +25,12 @@ const addUser = async (req, res) => {
     let token = jwt.sign(payload, jwtOptions.secretOrKey);
     res.status(201).json({
       message: "User created successfully",
-      user: { name: user.fName, type: user.userType, token: token },
+      user: {
+        name: user.fName,
+        type: user.userType,
+        id: user.id,
+        token: token,
+      },
     });
   } catch (error) {
     console.error("Error creating users:", error);
@@ -56,7 +61,12 @@ const loginUser = async (req, res) => {
 
         res.status(200).json({
           message: "Login Successful",
-          user: { name: user[0].fName, type: user[0].userType, token: token },
+          user: {
+            name: user[0].fName,
+            type: user[0].userType,
+            id: user[0].id,
+            token: token,
+          },
         });
       } else {
         // Passwords do not match
