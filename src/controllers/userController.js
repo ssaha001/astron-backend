@@ -1,4 +1,4 @@
-const { User } = require("../tables");
+const { User, Employee } = require("../tables");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { jwtOptions } = require("../auth");
@@ -14,14 +14,12 @@ const addUser = async (req, res) => {
       password: hashedPassword,
       userType: req.body.type,
     });
-    console.log("User created");
     let payload = {
       _id: user.id,
       userName: user.userName,
       fullName: user.fullName,
       type: user.userType,
     };
-    console.log("User email", user.email);
     let token = jwt.sign(payload, jwtOptions.secretOrKey);
     res.status(201).json({
       message: "User created successfully",
@@ -41,15 +39,22 @@ const addUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const salt = await bcrypt.genSalt(10);
-    const user = await User.findAll({
+    let user = await User.findAll({
       where: {
         email: req.body.email,
       },
     });
+    //1y,wD#
+    if(user.length===0){
+      user=await Employee.findAll({
+        where: {
+          email: req.body.email,
+        },
+      })
+    }
+    console.log("Lets login")
     bcrypt.compare(req.body.password, user[0].password, (err, result) => {
       if (result) {
-        console.log("User Authenticated");
-        console.log(user[0].lName);
         let payload = {
           id: user[0].id,
           lName: user[0].lName,
@@ -70,7 +75,6 @@ const loginUser = async (req, res) => {
         });
       } else {
         // Passwords do not match
-        console.log("Passwords do not match");
         res.status(401).json({
           message: "Unauthorized",
         });

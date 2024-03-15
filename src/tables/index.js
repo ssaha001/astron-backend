@@ -1,5 +1,7 @@
 const { Sequelize } = require("sequelize");
 const UserModel = require("./User");
+const EmployeeModel = require("./Employee");
+const ScheduleModel = require("./Schedule");
 const env = require("dotenv");
 
 env.config();
@@ -19,6 +21,13 @@ const sequelize = new Sequelize(DATABASE, USER, PASSWORD, {
 });
 
 const User = UserModel(sequelize, Sequelize);
+const Employee = EmployeeModel(sequelize, Sequelize);
+const Schedule = ScheduleModel(sequelize, Sequelize);
+
+Employee.hasOne(User)
+Schedule.belongsTo(Employee);
+User.hasMany(Employee)
+
 
 sequelize
   .sync()
@@ -32,5 +41,7 @@ sequelize
 
 module.exports = {
   User,
+  Employee,
+  Schedule,
   sequelize,
 };

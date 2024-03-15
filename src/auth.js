@@ -9,7 +9,7 @@ const jwtOptions = {
 };
 
 const strategy = new JwtStrategy(jwtOptions, function (jwt_payload, next) {
-  console.log("payload received", jwt_payload);
+
 
   if (jwt_payload) {
     next(null, {
