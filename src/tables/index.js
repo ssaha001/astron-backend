@@ -3,6 +3,8 @@ const UserModel = require("./User");
 const EmployeeModel = require("./Employee");
 const ScheduleModel = require("./Schedule");
 const ProjectModel = require("./Project");
+const RequirementModel = require("./Requirement");
+const BidModel = require("./Bid");
 const env = require("dotenv");
 
 env.config();
@@ -25,11 +27,17 @@ const User = UserModel(sequelize, Sequelize);
 const Employee = EmployeeModel(sequelize, Sequelize);
 const Schedule = ScheduleModel(sequelize, Sequelize);
 const Project = ProjectModel(sequelize, Sequelize);
+const Requirement = RequirementModel(sequelize, Sequelize);
+const Bid= BidModel(sequelize, Sequelize);
 
 Employee.hasOne(User);
 Schedule.belongsTo(Employee);
 User.hasMany(Employee);
 User.hasMany(Project);
+User.hasMany(Requirement);
+Requirement.hasOne(User)
+Requirement.hasMany(Bid);
+Bid.hasOne(User);
 Project.hasMany(User);
 
 sequelize
@@ -47,5 +55,7 @@ module.exports = {
   Employee,
   Schedule,
   Project,
+  Requirement,
+  Bid,
   sequelize,
 };

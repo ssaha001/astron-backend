@@ -1,4 +1,4 @@
-const { User, Employee } = require("../tables");
+const { User, Employee, Requirement, Bid } = require("../tables");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { jwtOptions } = require("../auth");
@@ -45,14 +45,14 @@ const loginUser = async (req, res) => {
       },
     });
     //1y,wD#
-    if(user.length===0){
-      user=await Employee.findAll({
+    if (user.length === 0) {
+      user = await Employee.findAll({
         where: {
           email: req.body.email,
         },
-      })
+      });
     }
-    console.log("Lets login")
+    console.log("Lets login");
     bcrypt.compare(req.body.password, user[0].password, (err, result) => {
       if (result) {
         let payload = {
@@ -86,7 +86,87 @@ const loginUser = async (req, res) => {
   }
 };
 
+const postRequirement = async (req, res) => {
+  try {
+    const requirement = await Requirement.create({
+      name: req.body.name,
+      quantity: req.body.quantity,
+      unit: req.body.unit,
+      isFilled: false,
+      bidAmount: 0.0,
+      UserId: req.body.id,
+    });
+    res.status(201).json({
+      message: "Requirement created successfully",
+      requirement: {
+        name: requirement.name,
+        quantity: requirement.quantity,
+        unit: requirement.unit,
+      },
+    });
+  } catch (error) {
+    console.error("Error creating requirement:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+const getAllRequirement = async (req, res) => {
+  try {
+    const userId = req.params.id.substring(1);
+    const user = await User.findByPk(userId, {
+      include: [{
+        model: Requirement,
+        include: [{
+          model: Bid,
+          attributes: ['bidAmount', 'supplierId'],
+          include: [{
+            model: User,
+            attributes: ['fName', 'lName'], // Assuming the User model has fName and lName attributes
+            as: 'supplier',
+          }],
+        }],
+      }],
+    });
+  
+    if (!user) {
+      console.log('User not found');
+      return;
+    }
+  
+    console.log("User found");
+    const requirements = user.Requirements.map(requirement => {
+      const bids = requirement.Bids.map(bid => ({
+        supplierName: `${bid.supplier.fName} ${bid.supplier.lName}`,
+        bidAmount: bid.bidAmount
+      }));
+      return {
+        id: requirement.id,
+        name: requirement.name,
+        quantity: requirement.quantity,
+        unit: requirement.unit,
+        isFilled: requirement.isFilled,
+        createdAt: requirement.createdAt,
+        updatedAt: requirement.updatedAt,
+        UserId: requirement.UserId,
+        bids: bids
+      };
+    });
+  
+    res.status(200).json({
+      message: "Requirements fetched successfully",
+      requirements: requirements
+    });
+  } catch (error) {
+    console.error('Error fetching user requirements:', error);
+    res.status(500).json({
+      message: "Internal server error"
+    });
+  }
+  
+};
+
 module.exports = {
   addUser,
   loginUser,
+  postRequirement,
+  getAllRequirement,
 };
