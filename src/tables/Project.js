@@ -1,9 +1,9 @@
 module.exports = (sequelize, DataTypes) => {
-  const Property = sequelize.define("Property", {
+  const Project = sequelize.define("Project", {
     location: DataTypes.STRING, // first Name
     name: DataTypes.STRING, // Last Name
     developmentPhase: DataTypes.STRING,
   });
 
-  return Property;
+  return Project;
 };
