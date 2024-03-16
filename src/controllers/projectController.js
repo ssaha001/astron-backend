@@ -31,8 +31,66 @@ const addProject = async (req, res) => {
   }
 };
 
+const getAllProjects = async (req, res) => {
+  try {
+    const userId = req.params.id.substring(1);
+    console.log(req.body); // Log the entire req.body to see its contents
+    Project.findAll({
+      where: {
+        UserId: userId,
+      },
+    }).then(async (prj) => {
+      const projects = [];
+      await prj.forEach((p) => {
+        projects.push({
+          name: p.name,
+          location: p.location,
+          phase: p.developmentPhase,
+          id: p.id,
+        });
+      });
+      res.status(201).json({
+        projects: projects,
+      });
+    });
+  } catch (error) {
+    console.error("Error creating users:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const getProject = async (req, res) => {
+  try {
+    const id = req.params.id.substring(1);
+    console.log(req.body); // Log the entire req.body to see its contents
+    Project.findAll({
+      where: {
+        id: id,
+      },
+    }).then(async (prj) => {
+      const projects = [];
+      await prj.forEach((p) => {
+        projects.push({
+          name: p.name,
+          location: p.location,
+          phase: p.developmentPhases,
+          id:p.id
+        });
+      });
+      res.status(201).json({
+        projects: projects,
+      });
+    });
+  } catch (error) {
+    console.error("Error creating users:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 module.exports = {
   addProject,
+  getAllProjects,
+  getProject
 };
 
 // Example route
