@@ -145,6 +145,27 @@ const getEmp = async (req, res) => {
   }
 };
 
+// const getEmpSchedule = (req, res) => {
+//     const startDate =
+//     req.query.start_date || new Date().toISOString().split("T")[0];
+//   const endDate =
+//     req.query.end_date ||
+//     new Date(new Date().setDate(new Date().getDate() + 7))
+//       .toISOString()
+//       .split("T")[0];
+//   const dateArr = getDatesBetween(startDate, endDate);
+//   try {
+//     Schedule.findAll({
+//         where: {
+//           EmployeeId: req.params.id.substring(1)
+//         }
+//       }).then(schedules => {
+//         console.log(schedules);
+//       }).catch(err => {
+//         console.error('Error retrieving schedules:', err);
+//       });
+// }
+
 module.exports = {
   addEmployee,
   getEmp,

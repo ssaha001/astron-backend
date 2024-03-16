@@ -3,6 +3,7 @@ module.exports = (sequelize, DataTypes) => {
       "Bid",
       {
         bidAmount: DataTypes.FLOAT,
+        bidSubmittedBy: DataTypes.STRING,
       }
     );
   
